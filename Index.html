@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Para a Palmeirense</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #1b5e20;
+      color: white;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    #startScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #ff0000;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    #startScreen button {
+      padding: 15px 30px;
+      font-size: 1.5em;
+      background-color: black;
+      color: white;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    @keyframes brilhoGol {
+      0% { box-shadow: 0 0 10px #fff; transform: scale(1); }
+      50% { box-shadow: 0 0 30px #fff; transform: scale(1.1); }
+      100% { box-shadow: 0 0 10px #fff; transform: scale(1); }
+    }
+
+    #startScreen button:hover {
+      animation: brilhoGol 0.6s ease-in-out infinite;
+    }
+
+    #countdown {
+      font-size: 2em;
+      margin-top: 30vh;
+    }
+
+    #countdown img {
+      width: 100px;
+      height: 100px;
+      margin-bottom: 20px;
+      animation: girarEscudo 2s ease-in-out;
+    }
+
+    @keyframes girarEscudo {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .homenagem {
+      min-height: 100vh;
+      padding: 30px 20px;
+      background-image: url('foto1.jpg');
+      background-size: cover;
+      background-position: center;
+      display: none; /* Inicialmente escondido */
+    }
+
+    .overlay {
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 20px;
+      border-radius: 10px;
+      display: inline-block;
+    }
+
+    h1 {
+      font-size: 4em;
+      margin-bottom: 50px;
+    }
+
+    p {
+      font-size: 1.2em;
+      line-height: 1.6;
+      max-width: 600px;
+      margin: 0 auto 20px;
+      white-space: pre-wrap;
+    }
+
+    /* Confetes variados */
+    .confete {
+      position: fixed;
+      top: -20px;
+      width: 15px;
+      height: 15px;
+      opacity: 0.9;
+      z-index: 9999;
+      animation: cair linear forwards;
+    }
+
+    .circulo {
+      border-radius: 50%;
+    }
+
+    .estrela::before {
+      content: '★';
+      font-size: 16px;
+      color: inherit;
+    }
+
+    .coracao::before {
+      content: '❤';
+      font-size: 16px;
+      color: inherit;
+    }
+
+    @keyframes cair {
+      to {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="startScreen">
+    <h1></h1>
+    <button onclick="startApp()">Entrar</button>
+  </div>
+
+  <div id="countdown">
+    <img src="foto2.jpg" alt="Escudo do Palmeiras">
+    <h2>Para a Palmeirense</h2>
+    <div id="timer"></div>
+  </div>
+
+  <div id="homenagem" class="homenagem">
+    <div class="overlay">
+      <h1>MEU HUMILDE PARABÉNS!</h1>
+      <p> Você faz as coisas acontecerem com simplicidade e força. Tem algo em você que não tem como ignorar.
+      Sendo a maneira que se relaciona com as coisas, as pessoas, e a vida.
+      Não precisa de muito pra ver o quanto você é forte e autêntica.
+      PARABÉNS POR MAIS UM ANO LUNAAA!!!
+      Espero que seu dia seja perfeito!
+      Que seu caminho seja cheio de coisas boas, igual a que você espalha por aí sem nem perceber.
+      E se um dia duvidar do seu valor, lembre-se que até a lua tem fases, mas nunca deixa de brilhar e ser linda. </p>
+      <h3>Próxima vou ser mais criativo</h3>
+    </div>
+  </div>
+
+  <audio id="audioCountdown" loop>
+    <source src="Hino.mp3" type="audio/mpeg"> Seu navegador não suporta áudio.
+  </audio>
+
+  <audio id="audioHomenagem">
+    <source src="Mensagem.mp3" type="audio/mpeg"> Seu navegador não suporta áudio.
+  </audio>
+
+  <script>
+    const countdown = document.getElementById('countdown');
+    const homenagem = document.getElementById('homenagem');
+    const timer = document.getElementById('timer');
+    const audioCountdown = document.getElementById('audioCountdown');
+    const audioHomenagem = document.getElementById('audioHomenagem');
+    const startScreen = document.getElementById('startScreen');
+    const targetDate = new Date("2025-04-23T00:00:00").getTime();
+
+    countdown.style.display = "none"; // Inicialmente escondido
+    homenagem.style.display = "none"; // Inicialmente escondido
+
+    function startApp() {
+      startScreen.style.display = "none";
+      countdown.style.display = "block";
+      audioCountdown.play();
+
+      const interval = setInterval(() => {
+        const now = new Date().getTime();
+        const distance = targetDate - now;
+
+        if (distance <= 0) {
+          clearInterval(interval);
+          countdown.style.display = "none"; // Esconde o cronômetro e o escudo
+          homenagem.style.display = "block"; // Exibe a tela de homenagem
+
+          audioCountdown.pause();
+          audioCountdown.currentTime = 0;
+          audioHomenagem.play();
+          iniciarConfetes();
+          return;
+        }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        timer.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+      }, 1000);
+    }
+
+    function criarConfete() {
+      const confete = document.createElement('div');
+      const formatos = ['circulo', 'estrela', 'coracao'];
+      const cores = ['#66bb6a', '#81c784', '#a5d6a7', '#388e3c', '#4caf50'];
+
+      const formato = formatos[Math.floor(Math.random() * formatos.length)];
+      const cor = cores[Math.floor(Math.random() * cores.length)];
+
+      confete.classList.add('confete');
+      confete.classList.add(formato);
+      confete.style.left = Math.random() * window.innerWidth + 'px';
+      confete.style.color = cor;
+      confete.style.backgroundColor = formato === 'circulo' ? cor : 'transparent';
+      confete.style.animationDuration = (Math.random() * 3 + 2) + 's';
+
+      document.body.appendChild(confete);
+      setTimeout(() => confete.remove(), 5000);
+    }
+
+    function iniciarConfetes() {
+      setInterval(criarConfete, 150);
+    }
+  </script>
+</body>
+</html>
